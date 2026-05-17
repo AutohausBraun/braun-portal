@@ -1,60 +1,127 @@
-let currentMonth = new Date().getMonth();
+const SUPABASE_URL =
+  "https://yfehvpmphsyhpzzcdqld.supabase.co";
 
-let currentYear = new Date().getFullYear();
+const SUPABASE_KEY =
+ sb_publishable_mMgHrko1tucRceS0nbyLzQ_-1F_JheM;
 
 let currentUser = null;
 
+/* API */
+
+async function api(
+  endpoint,
+  method = "GET",
+  body = null
+){
+
+  let options = {
+
+    method: method,
+
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${SUPABASE_KEY}`,
+      "Content-Type": "application/json"
+    }
+
+  };
+
+  if(body){
+
+    options.body =
+      JSON.stringify(body);
+
+  }
+
+  let response = await fetch(
+    `${SUPABASE_URL}/rest/v1/${endpoint}`,
+    options
+  );
+
+  return await response.json();
+
+}
+
 /* LOGIN */
 
-function login() {
-  let email = document.getElementById("loginEmail").value;
+async function login(){
 
-  let password = document.getElementById("loginPassword").value;
+  let email =
+    document.getElementById(
+      "loginEmail"
+    ).value;
 
-  if (email === "admin@braun.local" && password === "BraunPortal!2026") {
+  let password =
+    document.getElementById(
+      "loginPassword"
+    ).value;
+
+  /* ADMIN LOGIN */
+
+  if(
+    email === "admin@braun.local" &&
+    password === "BraunPortal!2026"
+  ){
+
     currentUser = {
-      firstname: "Admin",
-      lastname: "",
-      role: "admin",
-      department: "Alle",
+      firstname:"Admin",
+      lastname:"",
+      role:"admin",
+      department:"Alle"
     };
 
     startSystem();
 
     return;
+
   }
 
-  let employees = JSON.parse(localStorage.getItem("employees")) || [];
+  /* MITARBEITER LOGIN */
 
-  let user = employees.find(function (employee) {
-    return employee.email === email && employee.password === password;
-  });
+  let users =
+    await api(
+      `employees?email=eq.${email}&password=eq.${password}`
+    );
 
-  if (user) {
-    currentUser = user;
+  if(users.length > 0){
 
-    localStorage.setItem("currentUser", JSON.stringify(user));
+    currentUser = users[0];
 
     startSystem();
 
     return;
+
   }
 
   alert("Falsche Zugangsdaten");
+
 }
 
-function startSystem() {
-  document.getElementById("loginScreen").style.display = "none";
+/* START */
 
-  document.getElementById("dashboard").style.display = "flex";
+function startSystem(){
 
-  document.getElementById("topbarUserName").innerHTML =
-    currentUser.firstname + " " + currentUser.lastname;
+  document.getElementById(
+    "loginScreen"
+  ).style.display = "none";
 
-  document.getElementById("topbarUserRole").innerHTML =
-    currentUser.role + " • " + currentUser.department;
+  document.getElementById(
+    "dashboard"
+  ).style.display = "flex";
 
-  applyPermissions();
+  document.getElementById(
+    "topbarUserName"
+  ).innerHTML =
+    currentUser.firstname +
+    " " +
+    currentUser.lastname;
+
+  document.getElementById(
+    "topbarUserRole"
+  ).innerHTML =
+    currentUser.role +
+    " • " +
+    currentUser.department;
 
   loadEmployees();
 
@@ -64,112 +131,159 @@ function startSystem() {
 
   loadSickLeaves();
 
-  renderCalendar();
-
   updateDashboard();
-}
 
-/* PERMISSIONS */
-
-function applyPermissions() {
-  if (currentUser.role === "mitarbeiter") {
-    document.querySelector(
-      "button[onclick=\"showPage('page-mitarbeiter')\"]",
-    ).style.display = "none";
-  }
 }
 
 /* LOGOUT */
 
-function logout() {
-  localStorage.removeItem("currentUser");
+function logout(){
 
   location.reload();
+
 }
 
 /* NAVIGATION */
 
-function showPage(pageId) {
-  let pages = document.querySelectorAll(".page");
+function showPage(pageId){
 
-  pages.forEach(function (page) {
+  let pages =
+    document.querySelectorAll(".page");
+
+  pages.forEach(function(page){
+
     page.classList.remove("active");
+
   });
 
-  document.getElementById(pageId).classList.add("active");
+  document
+    .getElementById(pageId)
+    .classList.add("active");
+
 }
 
 /* DASHBOARD */
 
-function updateDashboard() {
-  let employees = JSON.parse(localStorage.getItem("employees")) || [];
+async function updateDashboard(){
 
-  let vacations = JSON.parse(localStorage.getItem("vacations")) || [];
+  let employees =
+    await api("employees");
 
-  let sickLeaves = JSON.parse(localStorage.getItem("sickLeaves")) || [];
+  let vacations =
+    await api("vacations");
 
-  document.getElementById("employeeCount").innerHTML = employees.length;
+  let sickLeaves =
+    await api("sick_leaves");
 
-  document.getElementById("vacationCount").innerHTML = vacations.length;
+  document.getElementById(
+    "employeeCount"
+  ).innerHTML =
+    employees.length;
 
-  document.getElementById("sickCount").innerHTML = sickLeaves.length;
+  document.getElementById(
+    "vacationCount"
+  ).innerHTML =
+    vacations.length;
+
+  document.getElementById(
+    "sickCount"
+  ).innerHTML =
+    sickLeaves.length;
+
 }
 
-/* EMPLOYEES */
+/* MITARBEITER */
 
-function addEmployee() {
-  let firstname = document.getElementById("firstname").value;
+async function addEmployee(){
 
-  let lastname = document.getElementById("lastname").value;
+  let firstname =
+    document.getElementById(
+      "firstname"
+    ).value;
 
-  let email = document.getElementById("employeeEmail").value;
+  let lastname =
+    document.getElementById(
+      "lastname"
+    ).value;
 
-  let password = document.getElementById("employeePassword").value;
+  let email =
+    document.getElementById(
+      "employeeEmail"
+    ).value;
 
-  let role = document.getElementById("employeeRole").value;
+  let password =
+    document.getElementById(
+      "employeePassword"
+    ).value;
 
-  let department = document.getElementById("employeeDepartment").value;
+  let role =
+    document.getElementById(
+      "employeeRole"
+    ).value;
 
-  let employees = JSON.parse(localStorage.getItem("employees")) || [];
+  let department =
+    document.getElementById(
+      "employeeDepartment"
+    ).value;
 
-  employees.push({
-    firstname,
-    lastname,
-    email,
-    password,
-    role,
-    department,
-  });
-
-  localStorage.setItem("employees", JSON.stringify(employees));
+  await api(
+    "employees",
+    "POST",
+    [{
+      firstname,
+      lastname,
+      email,
+      password,
+      role,
+      department
+    }]
+  );
 
   loadEmployees();
 
   loadEmployeeSelects();
 
   updateDashboard();
+
 }
 
-function deleteEmployee(index) {
-  let employees = JSON.parse(localStorage.getItem("employees")) || [];
+async function deleteEmployee(id){
 
-  employees.splice(index, 1);
+  await fetch(
+    `${SUPABASE_URL}/rest/v1/employees?id=eq.${id}`,
+    {
 
-  localStorage.setItem("employees", JSON.stringify(employees));
+      method:"DELETE",
+
+      headers:{
+        apikey:SUPABASE_KEY,
+        Authorization:
+          `Bearer ${SUPABASE_KEY}`
+      }
+
+    }
+  );
 
   loadEmployees();
 
   updateDashboard();
+
 }
 
-function loadEmployees() {
-  let employeeList = document.getElementById("employeeList");
+async function loadEmployees(){
+
+  let employeeList =
+    document.getElementById(
+      "employeeList"
+    );
 
   employeeList.innerHTML = "";
 
-  let employees = JSON.parse(localStorage.getItem("employees")) || [];
+  let employees =
+    await api("employees");
 
-  employees.forEach(function (employee, index) {
+  employees.forEach(function(employee){
+
     employeeList.innerHTML += `
 
       <div class="employee-card">
@@ -185,83 +299,116 @@ function loadEmployees() {
 
         <p>${employee.department}</p>
 
-        <button onclick="deleteEmployee(${index})">
+        <button
+          onclick="deleteEmployee(${employee.id})">
+
           Löschen
+
         </button>
 
       </div>
 
     `;
+
   });
+
 }
 
-function loadEmployeeSelects() {
-  let vacationName = document.getElementById("vacationName");
+async function loadEmployeeSelects(){
 
-  let sickName = document.getElementById("sickName");
+  let vacationName =
+    document.getElementById(
+      "vacationName"
+    );
+
+  let sickName =
+    document.getElementById(
+      "sickName"
+    );
 
   vacationName.innerHTML = "";
 
   sickName.innerHTML = "";
 
-  let employees = JSON.parse(localStorage.getItem("employees")) || [];
+  let employees =
+    await api("employees");
 
-  employees.forEach(function (employee) {
-    let fullName = employee.firstname + " " + employee.lastname;
+  employees.forEach(function(employee){
+
+    let fullName =
+      employee.firstname +
+      " " +
+      employee.lastname;
 
     vacationName.innerHTML += `
+
       <option value="${fullName}">
         ${fullName}
       </option>
+
     `;
 
     sickName.innerHTML += `
+
       <option value="${fullName}">
         ${fullName}
       </option>
+
     `;
+
   });
+
 }
 
 /* URLAUB */
 
-function addVacation() {
-  let name = document.getElementById("vacationName").value;
+async function addVacation(){
 
-  let start = document.getElementById("vacationStart").value;
+  let name =
+    document.getElementById(
+      "vacationName"
+    ).value;
 
-  let end = document.getElementById("vacationEnd").value;
+  let start =
+    document.getElementById(
+      "vacationStart"
+    ).value;
 
-  let vacations = JSON.parse(localStorage.getItem("vacations")) || [];
+  let end =
+    document.getElementById(
+      "vacationEnd"
+    ).value;
 
-  vacations.push({
-    name,
-    start,
-    end,
-    status: "Offen",
-  });
-
-  localStorage.setItem("vacations", JSON.stringify(vacations));
+  await api(
+    "vacations",
+    "POST",
+    [{
+      name,
+      start,
+      end,
+      status:"Offen"
+    }]
+  );
 
   loadVacations();
 
   updateDashboard();
+
 }
 
-function loadVacations() {
-  let vacationList = document.getElementById("vacationList");
+async function loadVacations(){
+
+  let vacationList =
+    document.getElementById(
+      "vacationList"
+    );
 
   vacationList.innerHTML = "";
 
-  let vacations = JSON.parse(localStorage.getItem("vacations")) || [];
+  let vacations =
+    await api("vacations");
 
-  vacations.forEach(function (vacation, index) {
-    if (
-      currentUser.role === "mitarbeiter" &&
-      vacation.name !== currentUser.firstname + " " + currentUser.lastname
-    ) {
-      return;
-    }
+  vacations.forEach(function(vacation){
 
     vacationList.innerHTML += `
 
@@ -280,48 +427,60 @@ function loadVacations() {
       </div>
 
     `;
+
   });
+
 }
 
 /* KRANK */
 
-function addSickLeave() {
-  let name = document.getElementById("sickName").value;
+async function addSickLeave(){
 
-  let start = document.getElementById("sickStart").value;
+  let name =
+    document.getElementById(
+      "sickName"
+    ).value;
 
-  let end = document.getElementById("sickEnd").value;
+  let start =
+    document.getElementById(
+      "sickStart"
+    ).value;
 
-  let sickLeaves = JSON.parse(localStorage.getItem("sickLeaves")) || [];
+  let end =
+    document.getElementById(
+      "sickEnd"
+    ).value;
 
-  sickLeaves.push({
-    name,
-    start,
-    end,
-    status: "Gemeldet",
-  });
-
-  localStorage.setItem("sickLeaves", JSON.stringify(sickLeaves));
+  await api(
+    "sick_leaves",
+    "POST",
+    [{
+      name,
+      start,
+      end,
+      status:"Gemeldet"
+    }]
+  );
 
   loadSickLeaves();
 
   updateDashboard();
+
 }
 
-function loadSickLeaves() {
-  let sickList = document.getElementById("sickList");
+async function loadSickLeaves(){
+
+  let sickList =
+    document.getElementById(
+      "sickList"
+    );
 
   sickList.innerHTML = "";
 
-  let sickLeaves = JSON.parse(localStorage.getItem("sickLeaves")) || [];
+  let sickLeaves =
+    await api("sick_leaves");
 
-  sickLeaves.forEach(function (sick) {
-    if (
-      currentUser.role === "mitarbeiter" &&
-      sick.name !== currentUser.firstname + " " + currentUser.lastname
-    ) {
-      return;
-    }
+  sickLeaves.forEach(function(sick){
 
     sickList.innerHTML += `
 
@@ -340,102 +499,7 @@ function loadSickLeaves() {
       </div>
 
     `;
+
   });
-}
 
-/* KALENDER */
-
-function renderCalendar() {
-  let calendarGrid = document.getElementById("calendarGrid");
-
-  let calendarMonth = document.getElementById("calendarMonth");
-
-  calendarGrid.innerHTML = "";
-
-  let monthNames = [
-    "Januar",
-    "Februar",
-    "März",
-    "April",
-    "Mai",
-    "Juni",
-    "Juli",
-    "August",
-    "September",
-    "Oktober",
-    "November",
-    "Dezember",
-  ];
-
-  calendarMonth.innerHTML = monthNames[currentMonth] + " " + currentYear;
-
-  let daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
-
-  let vacations = JSON.parse(localStorage.getItem("vacations")) || [];
-
-  let sickLeaves = JSON.parse(localStorage.getItem("sickLeaves")) || [];
-
-  for (let day = 1; day <= daysInMonth; day++) {
-    let dayElement = document.createElement("div");
-
-    dayElement.classList.add("calendar-day");
-
-    dayElement.innerHTML = `
-      <div class="calendar-day-number">
-        ${day}
-      </div>
-    `;
-
-    vacations.forEach(function (vacation) {
-      let start = new Date(vacation.start);
-
-      if (start.getDate() === day && start.getMonth() === currentMonth) {
-        dayElement.innerHTML += `
-          <div class="calendar-event vacation-event">
-            Urlaub:
-            ${vacation.name}
-          </div>
-        `;
-      }
-    });
-
-    sickLeaves.forEach(function (sick) {
-      let start = new Date(sick.start);
-
-      if (start.getDate() === day && start.getMonth() === currentMonth) {
-        dayElement.innerHTML += `
-          <div class="calendar-event sick-event">
-            Krank:
-            ${sick.name}
-          </div>
-        `;
-      }
-    });
-
-    calendarGrid.appendChild(dayElement);
-  }
-}
-
-function previousMonth() {
-  currentMonth--;
-
-  if (currentMonth < 0) {
-    currentMonth = 11;
-
-    currentYear--;
-  }
-
-  renderCalendar();
-}
-
-function nextMonth() {
-  currentMonth++;
-
-  if (currentMonth > 11) {
-    currentMonth = 0;
-
-    currentYear++;
-  }
-
-  renderCalendar();
 }

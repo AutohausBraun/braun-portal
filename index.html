@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="de">
+
+<head>
+  <meta charset="UTF-8">
+
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0">
+
+  <title>Braun Portal</title>
+
+  <link rel="stylesheet"
+    href="style.css">
+</head>
+
+<body>
+
+<!-- LOGIN -->
+
+<div id="loginScreen"
+  class="login-screen">
+
+  <div class="login-box">
+
+    <h1>Autohaus Braun</h1>
+
+    <p>Braun Portal Login</p>
+
+    <input type="email"
+      id="loginEmail"
+      placeholder="E-Mail">
+
+    <input type="password"
+      id="loginPassword"
+      placeholder="Passwort">
+
+    <button onclick="login()">
+      Einloggen
+    </button>
+
+  </div>
+
+</div>
+
+<!-- DASHBOARD -->
+
+<div id="dashboard">
+
+  <!-- SIDEBAR -->
+
+  <div class="sidebar">
+
+    <h2>Autohaus Braun</h2>
+
+    <button onclick="showPage('page-dashboard')">
+      Dashboard
+    </button>
+
+    <button onclick="showPage('page-urlaub')">
+      Urlaub
+    </button>
+
+    <button onclick="showPage('page-krank')">
+      Krankmeldung
+    </button>
+
+    <button onclick="showPage('page-mitarbeiter')">
+      Mitarbeiter
+    </button>
+
+    <button onclick="showPage('page-kalender')">
+      Admin Kalender
+    </button>
+
+  </div>
+
+  <!-- CONTENT -->
+
+  <div class="content">
+
+    <!-- TOPBAR -->
+
+    <div class="topbar">
+
+      <div class="user-info">
+
+        <div id="topbarUserName">
+          Benutzer
+        </div>
+
+        <div id="topbarUserRole">
+          Rolle
+        </div>
+
+      </div>
+
+      <button class="logout-btn"
+        onclick="logout()">
+
+        Logout
+
+      </button>
+
+    </div>
+
+    <!-- DASHBOARD -->
+
+    <section id="page-dashboard"
+      class="page active">
+
+      <h1>Dashboard</h1>
+
+      <div class="cards">
+
+        <div class="card">
+          <h3>Mitarbeiter</h3>
+          <p id="employeeCount">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Urlaub</h3>
+          <p id="vacationCount">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Krank</h3>
+          <p id="sickCount">0</p>
+        </div>
+
+        <div class="card">
+          <h3>Abteilungen</h3>
+          <p>4</p>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- URLAUB -->
+
+    <section id="page-urlaub"
+      class="page">
+
+      <h1>Urlaub beantragen</h1>
+
+      <select id="vacationName"></select>
+
+      <input type="date"
+        id="vacationStart">
+
+      <input type="date"
+        id="vacationEnd">
+
+      <button onclick="addVacation()">
+        Urlaub beantragen
+      </button>
+
+      <h2>Urlaubsanträge</h2>
+
+      <div id="vacationList"></div>
+
+    </section>
+
+    <!-- KRANK -->
+
+    <section id="page-krank"
+      class="page">
+
+      <h1>Krankmeldung</h1>
+
+      <select id="sickName"></select>
+
+      <input type="date"
+        id="sickStart">
+
+      <input type="date"
+        id="sickEnd">
+
+      <button onclick="addSickLeave()">
+        Krankmeldung senden
+      </button>
+
+      <h2>Krankmeldungen</h2>
+
+      <div id="sickList"></div>
+
+    </section>
+
+    <!-- MITARBEITER -->
+
+    <section id="page-mitarbeiter"
+      class="page">
+
+      <h1>Mitarbeiterverwaltung</h1>
+
+      <input type="text"
+        id="firstname"
+        placeholder="Vorname">
+
+      <input type="text"
+        id="lastname"
+        placeholder="Nachname">
+
+      <input type="email"
+        id="employeeEmail"
+        placeholder="E-Mail">
+
+      <input type="password"
+        id="employeePassword"
+        placeholder="Passwort">
+
+      <select id="employeeRole">
+
+        <option value="mitarbeiter">
+          Mitarbeiter
+        </option>
+
+        <option value="teamleiter">
+          Teamleiter
+        </option>
+
+        <option value="admin">
+          Admin
+        </option>
+
+      </select>
+
+      <select id="employeeDepartment">
+
+        <option value="Verkauf">
+          Verkauf
+        </option>
+
+        <option value="Werkstatt">
+          Werkstatt
+        </option>
+
+        <option value="Büro">
+          Büro
+        </option>
+
+        <option value="Lager">
+          Lager
+        </option>
+
+      </select>
+
+      <button onclick="addEmployee()">
+        Mitarbeiter anlegen
+      </button>
+
+      <div id="employeeList"></div>
+
+    </section>
+
+    <!-- KALENDER -->
+
+    <section id="page-kalender"
+      class="page">
+
+      <h1>Admin Kalender</h1>
+
+      <div class="calendar-header">
+
+        <button onclick="previousMonth()">
+          ←
+        </button>
+
+        <h2 id="calendarMonth"></h2>
+
+        <button onclick="nextMonth()">
+          →
+        </button>
+
+      </div>
+
+      <div class="calendar-grid"
+        id="calendarGrid"></div>
+
+    </section>
+
+  </div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>

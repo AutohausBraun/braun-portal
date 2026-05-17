@@ -1,0 +1,163 @@
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f3f4f6;
+}
+
+.login-screen{
+  width:100%;
+  height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  background:#003b73;
+}
+
+.login-box{
+  width:400px;
+  background:white;
+  padding:40px;
+  border-radius:20px;
+}
+
+input,
+select{
+  width:100%;
+  padding:16px;
+  margin-bottom:20px;
+  border-radius:10px;
+  border:1px solid #ccc;
+  box-sizing:border-box;
+}
+
+button{
+  padding:14px 20px;
+  border:none;
+  background:#003b73;
+  color:white;
+  border-radius:10px;
+  cursor:pointer;
+}
+
+#dashboard{
+  display:none;
+  height:100vh;
+}
+
+.sidebar{
+  width:260px;
+  background:white;
+  border-right:1px solid #ddd;
+  padding:30px;
+  display:flex;
+  flex-direction:column;
+}
+
+.sidebar button{
+  margin-bottom:10px;
+  text-align:left;
+}
+
+.content{
+  flex:1;
+  padding:40px;
+  overflow:auto;
+}
+
+.page{
+  display:none;
+}
+
+.page.active{
+  display:block;
+}
+
+.topbar{
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  margin-bottom:30px;
+}
+
+.user-info{
+  margin-right:20px;
+  text-align:right;
+}
+
+#topbarUserName{
+  font-weight:bold;
+}
+
+#topbarUserRole{
+  color:#6b7280;
+  font-size:14px;
+}
+
+.logout-btn{
+  background:#ff3b30;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:20px;
+}
+
+.card{
+  background:white;
+  padding:30px;
+  border-radius:15px;
+}
+
+.employee-card{
+  background:white;
+  padding:20px;
+  border-radius:15px;
+  margin-top:20px;
+}
+
+.employee-card button{
+  margin-right:10px;
+  margin-top:10px;
+}
+
+.calendar-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:20px;
+}
+
+.calendar-grid{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:10px;
+}
+
+.calendar-day{
+  background:white;
+  border-radius:10px;
+  padding:10px;
+  min-height:100px;
+}
+
+.calendar-day-number{
+  font-weight:bold;
+  margin-bottom:10px;
+}
+
+.calendar-event{
+  color:white;
+  padding:5px;
+  border-radius:5px;
+  font-size:12px;
+  margin-bottom:5px;
+}
+
+.vacation-event{
+  background:#22c55e;
+}
+
+.sick-event{
+  background:#ef4444;
+}

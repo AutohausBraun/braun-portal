@@ -1,5 +1,5 @@
 console.log("SCRIPT GELADEN");
- 
+
 const SUPABASE_URL =
   "https://yfehvpmphsyhpzzcdqld.supabase.co";
 
@@ -69,19 +69,12 @@ async function login(){
       "loginPassword"
     ).value;
 
-  console.log(email);
-  console.log(password);
-
   /* ADMIN LOGIN */
 
   if(
     email === "admin@braun.local" &&
     password === "BraunPortal!2026"
   ){
-
-    console.log(
-      "ADMIN LOGIN OK"
-    );
 
     currentUser = {
 
@@ -109,8 +102,6 @@ async function login(){
       await api(
         `employees?email=eq.${email}&password=eq.${password}`
       );
-
-    console.log(users);
 
     if(users.length > 0){
 
@@ -163,6 +154,8 @@ function startSystem(){
     " • " +
     currentUser.department;
 
+  applyPermissions();
+
   loadEmployees();
 
   loadEmployeeSelects();
@@ -174,6 +167,55 @@ function startSystem(){
   renderCalendar();
 
   updateDashboard();
+
+}
+
+/* ROLLEN */
+
+function applyPermissions(){
+
+  let employeeButton =
+    document.querySelector(
+      "button[onclick=\"showPage('page-mitarbeiter')\"]"
+    );
+
+  let calendarButton =
+    document.querySelector(
+      "button[onclick=\"showPage('page-kalender')\"]"
+    );
+
+  /* MITARBEITER */
+
+  if(currentUser.role === "mitarbeiter"){
+
+    if(employeeButton){
+
+      employeeButton.style.display =
+        "none";
+
+    }
+
+    if(calendarButton){
+
+      calendarButton.style.display =
+        "none";
+
+    }
+
+  }
+
+  /* TEAMLEITER */
+
+  if(currentUser.role === "teamleiter"){
+
+    if(employeeButton){
+
+      employeeButton.style.display =
+        "none";
+
+    }
+
+  }
 
 }
 
@@ -214,5 +256,577 @@ function showPage(pageId){
     );
 
   }
+
+}
+
+/* DASHBOARD */
+
+async function updateDashboard(){
+
+  let employees =
+    await api("employees");
+
+  let vacations =
+    await api("vacations");
+
+  let sickLeaves =
+    await api("sick_leaves");
+
+  document.getElementById(
+    "employeeCount"
+  ).innerHTML =
+    employees.length;
+
+  document.getElementById(
+    "vacationCount"
+  ).innerHTML =
+    vacations.length;
+
+  document.getElementById(
+    "sickCount"
+  ).innerHTML =
+    sickLeaves.length;
+
+}
+
+/* EMPLOYEES */
+
+async function addEmployee(){
+
+  let firstname =
+    document.getElementById(
+      "firstname"
+    ).value;
+
+  let lastname =
+    document.getElementById(
+      "lastname"
+    ).value;
+
+  let email =
+    document.getElementById(
+      "employeeEmail"
+    ).value;
+
+  let password =
+    document.getElementById(
+      "employeePassword"
+    ).value;
+
+  let role =
+    document.getElementById(
+      "employeeRole"
+    ).value;
+
+  let department =
+    document.getElementById(
+      "employeeDepartment"
+    ).value;
+
+  await api(
+    "employees",
+    "POST",
+    [{
+      firstname,
+      lastname,
+      email,
+      password,
+      role,
+      department
+    }]
+  );
+
+  loadEmployees();
+
+  loadEmployeeSelects();
+
+  updateDashboard();
+
+}
+
+async function deleteEmployee(id){
+
+  await fetch(
+
+    `${SUPABASE_URL}/rest/v1/employees?id=eq.${id}`,
+
+    {
+
+      method:"DELETE",
+
+      headers:{
+        apikey:SUPABASE_KEY,
+
+        Authorization:
+          `Bearer ${SUPABASE_KEY}`
+      }
+
+    }
+
+  );
+
+  await loadEmployees();
+
+  await loadEmployeeSelects();
+
+  await updateDashboard();
+
+}
+
+async function loadEmployees(){
+
+  let employeeList =
+    document.getElementById(
+      "employeeList"
+    );
+
+  if(!employeeList){
+    return;
+  }
+
+  employeeList.innerHTML =
+    "";
+
+  let employees =
+    await api("employees");
+
+  employees.forEach(function(employee){
+
+    employeeList.innerHTML += `
+
+      <div class="employee-card">
+
+        <h3>
+          ${employee.firstname}
+          ${employee.lastname}
+        </h3>
+
+        <p>${employee.email}</p>
+
+        <p>${employee.role}</p>
+
+        <p>${employee.department}</p>
+
+        <button
+          onclick="deleteEmployee(${employee.id})">
+
+          Löschen
+
+        </button>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+async function loadEmployeeSelects(){
+
+  let vacationName =
+    document.getElementById(
+      "vacationName"
+    );
+
+  let sickName =
+    document.getElementById(
+      "sickName"
+    );
+
+  if(!vacationName || !sickName){
+    return;
+  }
+
+  vacationName.innerHTML =
+    "";
+
+  sickName.innerHTML =
+    "";
+
+  let employees =
+    await api("employees");
+
+  employees.forEach(function(employee){
+
+    let fullName =
+      employee.firstname +
+      " " +
+      employee.lastname;
+
+    vacationName.innerHTML += `
+
+      <option value="${fullName}">
+        ${fullName}
+      </option>
+
+    `;
+
+    sickName.innerHTML += `
+
+      <option value="${fullName}">
+        ${fullName}
+      </option>
+
+    `;
+
+  });
+
+}
+
+/* URLAUB */
+
+async function addVacation(){
+
+  let name =
+    document.getElementById(
+      "vacationName"
+    ).value;
+
+  let start =
+    document.getElementById(
+      "vacationStart"
+    ).value;
+
+  let end =
+    document.getElementById(
+      "vacationEnd"
+    ).value;
+
+  await api(
+    "vacations",
+    "POST",
+    [{
+      name,
+      start,
+      end,
+      status:"Offen"
+    }]
+  );
+
+  loadVacations();
+
+  renderCalendar();
+
+  updateDashboard();
+
+}
+
+async function loadVacations(){
+
+  let vacationList =
+    document.getElementById(
+      "vacationList"
+    );
+
+  if(!vacationList){
+    return;
+  }
+
+  vacationList.innerHTML =
+    "";
+
+  let vacations =
+    await api("vacations");
+
+  vacations.forEach(function(vacation){
+
+    /* MITARBEITER NUR EIGENE */
+
+    if(
+      currentUser.role === "mitarbeiter"
+    ){
+
+      let fullName =
+        currentUser.firstname +
+        " " +
+        currentUser.lastname;
+
+      if(vacation.name !== fullName){
+
+        return;
+
+      }
+
+    }
+
+    vacationList.innerHTML += `
+
+      <div class="employee-card">
+
+        <h3>${vacation.name}</h3>
+
+        <p>
+          ${vacation.start}
+          bis
+          ${vacation.end}
+        </p>
+
+        <p>
+          ${vacation.status}
+        </p>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+/* KRANK */
+
+async function addSickLeave(){
+
+  let name =
+    document.getElementById(
+      "sickName"
+    ).value;
+
+  let start =
+    document.getElementById(
+      "sickStart"
+    ).value;
+
+  let end =
+    document.getElementById(
+      "sickEnd"
+    ).value;
+
+  await api(
+    "sick_leaves",
+    "POST",
+    [{
+      name,
+      start,
+      end,
+      status:"Gemeldet"
+    }]
+  );
+
+  loadSickLeaves();
+
+  renderCalendar();
+
+  updateDashboard();
+
+}
+
+async function loadSickLeaves(){
+
+  let sickList =
+    document.getElementById(
+      "sickList"
+    );
+
+  if(!sickList){
+    return;
+  }
+
+  sickList.innerHTML =
+    "";
+
+  let sickLeaves =
+    await api("sick_leaves");
+
+  sickLeaves.forEach(function(sick){
+
+    /* MITARBEITER NUR EIGENE */
+
+    if(
+      currentUser.role === "mitarbeiter"
+    ){
+
+      let fullName =
+        currentUser.firstname +
+        " " +
+        currentUser.lastname;
+
+      if(sick.name !== fullName){
+
+        return;
+
+      }
+
+    }
+
+    sickList.innerHTML += `
+
+      <div class="employee-card">
+
+        <h3>${sick.name}</h3>
+
+        <p>
+          ${sick.start}
+          bis
+          ${sick.end}
+        </p>
+
+        <p>${sick.status}</p>
+
+      </div>
+
+    `;
+
+  });
+
+}
+
+/* KALENDER */
+
+async function renderCalendar(){
+
+  let calendarGrid =
+    document.getElementById(
+      "calendarGrid"
+    );
+
+  let calendarMonth =
+    document.getElementById(
+      "calendarMonth"
+    );
+
+  if(!calendarGrid || !calendarMonth){
+    return;
+  }
+
+  calendarGrid.innerHTML =
+    "";
+
+  let monthNames = [
+
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember"
+
+  ];
+
+  calendarMonth.innerHTML =
+    monthNames[currentMonth] +
+    " " +
+    currentYear;
+
+  let daysInMonth =
+    new Date(
+      currentYear,
+      currentMonth + 1,
+      0
+    ).getDate();
+
+  let vacations =
+    await api("vacations");
+
+  let sickLeaves =
+    await api("sick_leaves");
+
+  for(
+    let day = 1;
+    day <= daysInMonth;
+    day++
+  ){
+
+    let dayElement =
+      document.createElement(
+        "div"
+      );
+
+    dayElement.classList.add(
+      "calendar-day"
+    );
+
+    dayElement.innerHTML = `
+      <div class="calendar-day-number">
+        ${day}
+      </div>
+    `;
+
+    vacations.forEach(function(vacation){
+
+      let start =
+        new Date(vacation.start);
+
+      if(
+        start.getDate() === day &&
+        start.getMonth() === currentMonth
+      ){
+
+        dayElement.innerHTML += `
+          <div class="calendar-event vacation-event">
+            Urlaub:
+            ${vacation.name}
+          </div>
+        `;
+
+      }
+
+    });
+
+    sickLeaves.forEach(function(sick){
+
+      let start =
+        new Date(sick.start);
+
+      if(
+        start.getDate() === day &&
+        start.getMonth() === currentMonth
+      ){
+
+        dayElement.innerHTML += `
+          <div class="calendar-event sick-event">
+            Krank:
+            ${sick.name}
+          </div>
+        `;
+
+      }
+
+    });
+
+    calendarGrid.appendChild(
+      dayElement
+    );
+
+  }
+
+}
+
+function previousMonth(){
+
+  currentMonth--;
+
+  if(currentMonth < 0){
+
+    currentMonth = 11;
+
+    currentYear--;
+
+  }
+
+  renderCalendar();
+
+}
+
+function nextMonth(){
+
+  currentMonth++;
+
+  if(currentMonth > 11){
+
+    currentMonth = 0;
+
+    currentYear++;
+
+  }
+
+  renderCalendar();
 
 }

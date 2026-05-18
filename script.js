@@ -137,6 +137,46 @@ function startSystem(){
     " • " +
     currentUser.department;
 
+  applyPermissions();
+
+  loadEmployees();
+
+  loadEmployeeSelects();
+
+  loadVacations();
+
+  loadSickLeaves();
+
+  renderCalendar();
+
+  updateDashboard();
+
+}
+
+  document.getElementById(
+    "loginScreen"
+  ).style.display =
+    "none";
+
+  document.getElementById(
+    "dashboard"
+  ).style.display =
+    "flex";
+
+  document.getElementById(
+    "topbarUserName"
+  ).innerHTML =
+    currentUser.firstname +
+    " " +
+    currentUser.lastname;
+
+  document.getElementById(
+    "topbarUserRole"
+  ).innerHTML =
+    currentUser.role +
+    " • " +
+    currentUser.department;
+
   loadEmployees();
 
   loadEmployeeSelects();

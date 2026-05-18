@@ -2,7 +2,7 @@ console.log("SCRIPT GELADEN");
 
 const SUPABASE_URL =
   "https://yfehvpmphsyhpzzcdqld.supabase.co";
-
+ 
 const SUPABASE_KEY =
   "sb_publishable_mMgHrko1tucRceS0nbyLzQ_-1F_JheM";
 

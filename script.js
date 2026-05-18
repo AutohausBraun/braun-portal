@@ -137,8 +137,6 @@ function startSystem(){
     " • " +
     currentUser.department;
 
-  applyPermissions();
-
   loadEmployees();
 
   loadEmployeeSelects();
@@ -152,23 +150,6 @@ function startSystem(){
   updateDashboard();
 
 }
-function applyPermissions(){
-
-  /* MITARBEITER */
-
-  if(currentUser.role === "mitarbeiter"){
-
-    document.querySelector(
-      "button[onclick=\"showPage('page-mitarbeiter')\"]"
-    ).style.display =
-      "none";
-
-    document.querySelector(
-      "button[onclick=\"showPage('page-kalender')\"]"
-    ).style.display =
-      "none";
-
-  }
 
   /* TEAMLEITER */
 

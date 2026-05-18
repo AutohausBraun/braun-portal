@@ -1,5 +1,5 @@
 console.log("SCRIPT GELADEN");
-
+ 
 const SUPABASE_URL =
   "https://yfehvpmphsyhpzzcdqld.supabase.co";
 

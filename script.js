@@ -340,6 +340,33 @@ async function addEmployee(){
 async function deleteEmployee(id){
 
   await fetch(
+
+    `${SUPABASE_URL}/rest/v1/employees?id=eq.${id}`,
+
+    {
+
+      method:"DELETE",
+
+      headers:{
+        apikey:SUPABASE_KEY,
+
+        Authorization:
+          `Bearer ${SUPABASE_KEY}`
+      }
+
+    }
+
+  );
+
+  await loadEmployees();
+
+  await loadEmployeeSelects();
+
+  await updateDashboard();
+
+}
+
+  await fetch(
     `${SUPABASE_URL}/rest/v1/employees?id=eq.${id}`,
     {
 

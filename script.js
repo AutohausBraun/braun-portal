@@ -151,57 +151,6 @@ function startSystem(){
 
 }
 
-  /* TEAMLEITER */
-
-  if(currentUser.role === "teamleiter"){
-
-    document.querySelector(
-      "button[onclick=\"showPage('page-mitarbeiter')\"]"
-    ).style.display =
-      "none";
-
-  }
-
-}
-
-  document.getElementById(
-    "loginScreen"
-  ).style.display =
-    "none";
-
-  document.getElementById(
-    "dashboard"
-  ).style.display =
-    "flex";
-
-  document.getElementById(
-    "topbarUserName"
-  ).innerHTML =
-    currentUser.firstname +
-    " " +
-    currentUser.lastname;
-
-  document.getElementById(
-    "topbarUserRole"
-  ).innerHTML =
-    currentUser.role +
-    " • " +
-    currentUser.department;
-
-  loadEmployees();
-
-  loadEmployeeSelects();
-
-  loadVacations();
-
-  loadSickLeaves();
-
-  renderCalendar();
-
-  updateDashboard();
-
-}
-
 /* LOGOUT */
 
 function logout(){
@@ -227,9 +176,16 @@ function showPage(pageId){
 
   });
 
-  document
-    .getElementById(pageId)
-    .classList.add("active");
+  let targetPage =
+    document.getElementById(pageId);
+
+  if(targetPage){
+
+    targetPage.classList.add(
+      "active"
+    );
+
+  }
 
 }
 
@@ -347,35 +303,16 @@ async function deleteEmployee(id){
 
 }
 
-  await fetch(
-    `${SUPABASE_URL}/rest/v1/employees?id=eq.${id}`,
-    {
-
-      method:"DELETE",
-
-      headers:{
-        apikey:
-          SUPABASE_KEY,
-
-        Authorization:
-          `Bearer ${SUPABASE_KEY}`
-      }
-
-    }
-  );
-
-  loadEmployees();
-
-  updateDashboard();
-
-}
-
 async function loadEmployees(){
 
   let employeeList =
     document.getElementById(
       "employeeList"
     );
+
+  if(!employeeList){
+    return;
+  }
 
   employeeList.innerHTML =
     "";
@@ -426,6 +363,10 @@ async function loadEmployeeSelects(){
     document.getElementById(
       "sickName"
     );
+
+  if(!vacationName || !sickName){
+    return;
+  }
 
   vacationName.innerHTML =
     "";
@@ -508,6 +449,10 @@ async function loadVacations(){
       "vacationList"
     );
 
+  if(!vacationList){
+    return;
+  }
+
   vacationList.innerHTML =
     "";
 
@@ -585,6 +530,10 @@ async function loadSickLeaves(){
       "sickList"
     );
 
+  if(!sickList){
+    return;
+  }
+
   sickList.innerHTML =
     "";
 
@@ -629,7 +578,7 @@ async function renderCalendar(){
       "calendarMonth"
     );
 
-  if(!calendarGrid){
+  if(!calendarGrid || !calendarMonth){
     return;
   }
 

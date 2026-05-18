@@ -2,9 +2,15 @@ const SUPABASE_URL =
   "https://yfehvpmphsyhpzzcdqld.supabase.co";
 
 const SUPABASE_KEY =
- "sb_publishable_mMgHrko1tucRceS0nbyLzQ_-1F_JheM";
+  "sb_publishable_mMgHrko1tucRceS0nbyLzQ_-1F_JheM";
 
 let currentUser = null;
+
+let currentMonth =
+  new Date().getMonth();
+
+let currentYear =
+  new Date().getFullYear();
 
 /* API */
 
@@ -20,8 +26,10 @@ async function api(
 
     headers: {
       apikey: SUPABASE_KEY,
-      Authorization: `Bearer ${SUPABASE_KEY}`,
-      "Content-Type": "application/json"
+      Authorization:
+        `Bearer ${SUPABASE_KEY}`,
+      "Content-Type":
+        "application/json"
     }
 
   };
@@ -33,10 +41,11 @@ async function api(
 
   }
 
-  let response = await fetch(
-    `${SUPABASE_URL}/rest/v1/${endpoint}`,
-    options
-  );
+  let response =
+    await fetch(
+      `${SUPABASE_URL}/rest/v1/${endpoint}`,
+      options
+    );
 
   return await response.json();
 
@@ -56,7 +65,7 @@ async function login(){
       "loginPassword"
     ).value;
 
-  /* ADMIN LOGIN */
+  /* ADMIN */
 
   if(
     email === "admin@braun.local" &&
@@ -76,7 +85,7 @@ async function login(){
 
   }
 
-  /* MITARBEITER LOGIN */
+  /* USERS */
 
   let users =
     await api(
@@ -85,7 +94,8 @@ async function login(){
 
   if(users.length > 0){
 
-    currentUser = users[0];
+    currentUser =
+      users[0];
 
     startSystem();
 
@@ -93,7 +103,9 @@ async function login(){
 
   }
 
-  alert("Falsche Zugangsdaten");
+  alert(
+    "Falsche Zugangsdaten"
+  );
 
 }
 
@@ -103,11 +115,13 @@ function startSystem(){
 
   document.getElementById(
     "loginScreen"
-  ).style.display = "none";
+  ).style.display =
+    "none";
 
   document.getElementById(
     "dashboard"
-  ).style.display = "flex";
+  ).style.display =
+    "flex";
 
   document.getElementById(
     "topbarUserName"
@@ -131,6 +145,8 @@ function startSystem(){
 
   loadSickLeaves();
 
+  renderCalendar();
+
   updateDashboard();
 
 }
@@ -148,11 +164,15 @@ function logout(){
 function showPage(pageId){
 
   let pages =
-    document.querySelectorAll(".page");
+    document.querySelectorAll(
+      ".page"
+    );
 
   pages.forEach(function(page){
 
-    page.classList.remove("active");
+    page.classList.remove(
+      "active"
+    );
 
   });
 
@@ -192,7 +212,7 @@ async function updateDashboard(){
 
 }
 
-/* MITARBEITER */
+/* EMPLOYEES */
 
 async function addEmployee(){
 
@@ -256,7 +276,9 @@ async function deleteEmployee(id){
       method:"DELETE",
 
       headers:{
-        apikey:SUPABASE_KEY,
+        apikey:
+          SUPABASE_KEY,
+
         Authorization:
           `Bearer ${SUPABASE_KEY}`
       }
@@ -277,7 +299,8 @@ async function loadEmployees(){
       "employeeList"
     );
 
-  employeeList.innerHTML = "";
+  employeeList.innerHTML =
+    "";
 
   let employees =
     await api("employees");
@@ -326,9 +349,11 @@ async function loadEmployeeSelects(){
       "sickName"
     );
 
-  vacationName.innerHTML = "";
+  vacationName.innerHTML =
+    "";
 
-  sickName.innerHTML = "";
+  sickName.innerHTML =
+    "";
 
   let employees =
     await api("employees");
@@ -392,6 +417,8 @@ async function addVacation(){
 
   loadVacations();
 
+  renderCalendar();
+
   updateDashboard();
 
 }
@@ -403,7 +430,8 @@ async function loadVacations(){
       "vacationList"
     );
 
-  vacationList.innerHTML = "";
+  vacationList.innerHTML =
+    "";
 
   let vacations =
     await api("vacations");
@@ -422,7 +450,9 @@ async function loadVacations(){
           ${vacation.end}
         </p>
 
-        <p>${vacation.status}</p>
+        <p>
+          ${vacation.status}
+        </p>
 
       </div>
 
@@ -464,6 +494,8 @@ async function addSickLeave(){
 
   loadSickLeaves();
 
+  renderCalendar();
+
   updateDashboard();
 
 }
@@ -475,7 +507,8 @@ async function loadSickLeaves(){
       "sickList"
     );
 
-  sickList.innerHTML = "";
+  sickList.innerHTML =
+    "";
 
   let sickLeaves =
     await api("sick_leaves");
@@ -501,5 +534,164 @@ async function loadSickLeaves(){
     `;
 
   });
+
+}
+
+/* KALENDER */
+
+async function renderCalendar(){
+
+  let calendarGrid =
+    document.getElementById(
+      "calendarGrid"
+    );
+
+  let calendarMonth =
+    document.getElementById(
+      "calendarMonth"
+    );
+
+  if(!calendarGrid){
+    return;
+  }
+
+  calendarGrid.innerHTML =
+    "";
+
+  let monthNames = [
+
+    "Januar",
+    "Februar",
+    "März",
+    "April",
+    "Mai",
+    "Juni",
+    "Juli",
+    "August",
+    "September",
+    "Oktober",
+    "November",
+    "Dezember"
+
+  ];
+
+  calendarMonth.innerHTML =
+    monthNames[currentMonth] +
+    " " +
+    currentYear;
+
+  let daysInMonth =
+    new Date(
+      currentYear,
+      currentMonth + 1,
+      0
+    ).getDate();
+
+  let vacations =
+    await api("vacations");
+
+  let sickLeaves =
+    await api("sick_leaves");
+
+  for(
+    let day = 1;
+    day <= daysInMonth;
+    day++
+  ){
+
+    let dayElement =
+      document.createElement(
+        "div"
+      );
+
+    dayElement.classList.add(
+      "calendar-day"
+    );
+
+    dayElement.innerHTML = `
+      <div class="calendar-day-number">
+        ${day}
+      </div>
+    `;
+
+    vacations.forEach(function(vacation){
+
+      let start =
+        new Date(vacation.start);
+
+      if(
+        start.getDate() === day &&
+        start.getMonth() === currentMonth
+      ){
+
+        dayElement.innerHTML += `
+          <div class="calendar-event vacation-event">
+            Urlaub:
+            ${vacation.name}
+          </div>
+        `;
+
+      }
+
+    });
+
+    sickLeaves.forEach(function(sick){
+
+      let start =
+        new Date(sick.start);
+
+      if(
+        start.getDate() === day &&
+        start.getMonth() === currentMonth
+      ){
+
+        dayElement.innerHTML += `
+          <div class="calendar-event sick-event">
+            Krank:
+            ${sick.name}
+          </div>
+        `;
+
+      }
+
+    });
+
+    calendarGrid.appendChild(
+      dayElement
+    );
+
+  }
+
+}
+
+function previousMonth(){
+
+  currentMonth--;
+
+  if(currentMonth < 0){
+
+    currentMonth = 11;
+
+    currentYear--;
+
+  }
+
+  renderCalendar();
+
+}
+
+function nextMonth(){
+
+  currentMonth++;
+
+  if(currentMonth > 11){
+
+    currentMonth = 0;
+
+    currentYear++;
+
+  }
+
+  renderCalendar();
 
 }

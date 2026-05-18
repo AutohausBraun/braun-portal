@@ -152,6 +152,36 @@ function startSystem(){
   updateDashboard();
 
 }
+function applyPermissions(){
+
+  /* MITARBEITER */
+
+  if(currentUser.role === "mitarbeiter"){
+
+    document.querySelector(
+      "button[onclick=\"showPage('page-mitarbeiter')\"]"
+    ).style.display =
+      "none";
+
+    document.querySelector(
+      "button[onclick=\"showPage('page-kalender')\"]"
+    ).style.display =
+      "none";
+
+  }
+
+  /* TEAMLEITER */
+
+  if(currentUser.role === "teamleiter"){
+
+    document.querySelector(
+      "button[onclick=\"showPage('page-mitarbeiter')\"]"
+    ).style.display =
+      "none";
+
+  }
+
+}
 
   document.getElementById(
     "loginScreen"

@@ -9,7 +9,15 @@ begin
   raise exception 'Import nur in einen leeren v2-Datenbestand. Keine Daten wurden geändert.';
  end if;
  if to_regclass('public.employees') is null then raise exception 'Alte Mitarbeitertabelle nicht gefunden.'; end if;
- for r in execute 'select to_jsonb(e) from public.employees e' loop
+ if exists(
+   select 1 from public.employees
+   group by lower(trim(email))
+   having count(distinct trim(firstname)||chr(31)||trim(lastname)) > 1
+ ) then
+   raise exception 'Dieselbe E-Mail-Adresse gehört im Altbestand zu unterschiedlichen Namen. Import abgebrochen.';
+ end if;
+ -- Identische Dubletten aus dem bisherigen Portal werden einmal übernommen.
+ for r in execute 'select distinct on (lower(trim(email))) to_jsonb(e) from public.employees e order by lower(trim(email)), id' loop
   if nullif(trim(r->>'email'),'') is null or nullif(trim(r->>'firstname'),'') is null or nullif(trim(r->>'lastname'),'') is null then
    raise exception 'Ein alter Mitarbeitereintrag ist unvollständig. Import abgebrochen.';
   end if;
@@ -17,7 +25,8 @@ begin
   insert into public.bp_employees(firstname,lastname,email,department,role)
    values(trim(r->>'firstname'),trim(r->>'lastname'),lower(trim(r->>'email')),coalesce(nullif(trim(r->>'department'),''),'Nicht zugeordnet'),'mitarbeiter');
  end loop;
- for table_name,kind_name in select * from (values('vacations','vacation'),('sick_leaves','sick')) s(t,k) loop
+ -- Die bisherige Tabelle "department" enthält tatsächlich Urlaubszeiträume.
+ for table_name,kind_name in select * from (values('department','vacation'),('vacations','vacation'),('sick_leaves','sick')) s(t,k) loop
   if to_regclass('public.'||table_name) is null then continue; end if;
   for r in execute format('select to_jsonb(a) from public.%I a',table_name) loop
    source_name=trim(r->>'name');

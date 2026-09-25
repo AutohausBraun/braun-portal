@@ -17,7 +17,7 @@ begin
    raise exception 'Dieselbe E-Mail-Adresse gehört im Altbestand zu unterschiedlichen Namen. Import abgebrochen.';
  end if;
  -- Identische Dubletten aus dem bisherigen Portal werden einmal übernommen.
- for r in execute 'select distinct on (lower(trim(email))) to_jsonb(e) from public.employees e order by lower(trim(email)), id' loop
+ for r in execute 'select distinct on (lower(trim(email))) to_jsonb(e) from public.employees e order by lower(trim(email)), firstname, lastname' loop
   if nullif(trim(r->>'email'),'') is null or nullif(trim(r->>'firstname'),'') is null or nullif(trim(r->>'lastname'),'') is null then
    raise exception 'Ein alter Mitarbeitereintrag ist unvollständig. Import abgebrochen.';
   end if;

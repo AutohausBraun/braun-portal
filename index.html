@@ -1,289 +1,71 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
-
 <head>
-  <meta charset="UTF-8">
-
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1.0">
-
-  <title>Braun Portal</title>
-
-  <link rel="stylesheet"
-    href="style.css">
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Urlaubsplanung und Abwesenheiten für das Team von Autohaus Braun.">
+  <meta name="robots" content="noindex,nofollow"><meta name="referrer" content="no-referrer">
+  <title>Braun Portal · Urlaubsplanung</title>
+  <link rel="stylesheet" href="style.css">
+  <script defer src="vendor/supabase.js"></script><script defer src="config.js"></script>
+  <script defer src="domain.js"></script><script defer src="script.js"></script>
 </head>
-
 <body>
-
-<!-- LOGIN -->
-
-<div id="loginScreen"
-  class="login-screen">
-
-  <div class="login-box">
-
-    <h1>Autohaus Braun</h1>
-
-    <p>Braun Portal Login</p>
-
-    <input type="email"
-      id="loginEmail"
-      placeholder="E-Mail">
-
-    <input type="password"
-      id="loginPassword"
-      placeholder="Passwort">
-
-    <button onclick="login()">
-      Einloggen
-    </button>
-
-  </div>
-
-</div>
-
-<!-- DASHBOARD -->
-
-<div id="dashboard">
-
-  <!-- SIDEBAR -->
-
-  <div class="sidebar">
-
-    <h2>Autohaus Braun</h2>
-
-    <button onclick="showPage('page-dashboard')">
-      Dashboard
-    </button>
-
-    <button onclick="showPage('page-urlaub')">
-      Urlaub
-    </button>
-
-    <button onclick="showPage('page-krank')">
-      Krankmeldung
-    </button>
-
-    <button onclick="showPage('page-mitarbeiter')">
-      Mitarbeiter
-    </button>
-
-    <button onclick="showPage('page-kalender')">
-      Admin Kalender
-    </button>
-
-  </div>
-
-  <!-- CONTENT -->
-
-  <div class="content">
-
-    <!-- TOPBAR -->
-
-    <div class="topbar">
-
-      <div class="user-info">
-
-        <div id="topbarUserName">
-          Benutzer
-        </div>
-
-        <div id="topbarUserRole">
-          Rolle
-        </div>
-
-      </div>
-
-      <button class="logout-btn"
-        onclick="logout()">
-
-        Logout
-
-      </button>
-
+  <div id="notice" role="status" aria-live="polite" hidden></div>
+  <main id="loginScreen" class="login-screen">
+    <div class="login-box">
+      <p class="eyebrow">DAS TEAM IM BLICK</p><h1>Autohaus Braun</h1><p>Urlaub &amp; Abwesenheiten</p>
+      <form id="loginForm">
+        <label for="loginEmail">Geschäftliche E-Mail-Adresse</label><input id="loginEmail" type="email" autocomplete="username" required>
+        <label for="loginPassword">Passwort</label><input id="loginPassword" type="password" autocomplete="current-password" required>
+        <button type="submit">Einloggen</button>
+      </form>
+      <button id="emailLogin" class="secondary" type="button">Anmeldelink per E-Mail</button>
+      <p class="muted">Erste Anmeldung oder Passwort vergessen? Fordere einen Anmeldelink an. Zugriff erhalten nur freigeschaltete Mitarbeiter.</p>
     </div>
-
-    <!-- DASHBOARD -->
-
-    <section id="page-dashboard"
-      class="page active">
-
-      <h1>Dashboard</h1>
-
-      <div class="cards">
-
-        <div class="card">
-          <h3>Mitarbeiter</h3>
-          <p id="employeeCount">0</p>
-        </div>
-
-        <div class="card">
-          <h3>Urlaub</h3>
-          <p id="vacationCount">0</p>
-        </div>
-
-        <div class="card">
-          <h3>Krank</h3>
-          <p id="sickCount">0</p>
-        </div>
-
-        <div class="card">
-          <h3>Abteilungen</h3>
-          <p>4</p>
-        </div>
-
-      </div>
-
-    </section>
-
-    <!-- URLAUB -->
-
-    <section id="page-urlaub"
-      class="page">
-
-      <h1>Urlaub beantragen</h1>
-
-      <select id="vacationName"></select>
-
-      <input type="date"
-        id="vacationStart">
-
-      <input type="date"
-        id="vacationEnd">
-
-      <button onclick="addVacation()">
-        Urlaub beantragen
-      </button>
-
-      <h2>Urlaubsanträge</h2>
-
-      <div id="vacationList"></div>
-
-    </section>
-
-    <!-- KRANK -->
-
-    <section id="page-krank"
-      class="page">
-
-      <h1>Krankmeldung</h1>
-
-      <select id="sickName"></select>
-
-      <input type="date"
-        id="sickStart">
-
-      <input type="date"
-        id="sickEnd">
-
-      <button onclick="addSickLeave()">
-        Krankmeldung senden
-      </button>
-
-      <h2>Krankmeldungen</h2>
-
-      <div id="sickList"></div>
-
-    </section>
-
-    <!-- MITARBEITER -->
-
-    <section id="page-mitarbeiter"
-      class="page">
-
-      <h1>Mitarbeiterverwaltung</h1>
-
-      <input type="text"
-        id="firstname"
-        placeholder="Vorname">
-
-      <input type="text"
-        id="lastname"
-        placeholder="Nachname">
-
-      <input type="email"
-        id="employeeEmail"
-        placeholder="E-Mail">
-
-      <input type="password"
-        id="employeePassword"
-        placeholder="Passwort">
-
-      <select id="employeeRole">
-
-        <option value="mitarbeiter">
-          Mitarbeiter
-        </option>
-
-        <option value="teamleiter">
-          Teamleiter
-        </option>
-
-        <option value="admin">
-          Admin
-        </option>
-
-      </select>
-
-      <select id="employeeDepartment">
-
-        <option value="Verkauf">
-          Verkauf
-        </option>
-
-        <option value="Werkstatt">
-          Werkstatt
-        </option>
-
-        <option value="Büro">
-          Büro
-        </option>
-
-        <option value="Lager">
-          Lager
-        </option>
-
-      </select>
-
-      <button onclick="addEmployee()">
-        Mitarbeiter anlegen
-      </button>
-
-      <div id="employeeList"></div>
-
-    </section>
-
-    <!-- KALENDER -->
-
-    <section id="page-kalender"
-      class="page">
-
-      <h1>Admin Kalender</h1>
-
-      <div class="calendar-header">
-
-        <button onclick="previousMonth()">
-          ←
-        </button>
-
-        <h2 id="calendarMonth"></h2>
-
-        <button onclick="nextMonth()">
-          →
-        </button>
-
-      </div>
-
-      <div class="calendar-grid"
-        id="calendarGrid"></div>
-
-    </section>
-
+  </main>
+  <div id="dashboard" hidden>
+    <aside class="sidebar"><h2>Autohaus Braun</h2><p class="muted">Mitarbeiterportal</p>
+      <nav aria-label="Hauptnavigation">
+        <button data-page="overview">Übersicht</button><button data-page="vacation">Urlaub</button>
+        <button data-page="sick">Krankmeldungen</button><button data-page="calendar">Kalender</button>
+        <button data-page="employees" data-admin>Mitarbeiter</button><button data-page="settings" data-admin>Planungsgrundlagen</button>
+      </nav>
+    </aside>
+    <main class="content">
+      <header class="topbar"><div class="user-info"><strong id="userName"></strong><div id="userRole" class="muted"></div></div><button id="refresh" class="secondary">Aktualisieren</button><button id="logout" class="secondary">Abmelden</button></header>
+      <section id="page-overview" class="page active"><p class="eyebrow">URLAUBSPLANUNG</p><h1>Übersicht</h1><div id="cards" class="cards"></div><h2>Noch zu entscheiden</h2><div id="pendingList"></div></section>
+      <section id="page-vacation" class="page"><h1>Urlaub</h1><div id="balance" class="cards"></div>
+        <form id="vacationForm" class="panel form-grid">
+          <label>Mitarbeiter<select id="vacationEmployee" required></select></label>
+          <label>Von<input id="vacationStart" type="date" required></label><label>Bis einschließlich<input id="vacationEnd" type="date" required></label>
+          <label class="wide">Kommentar (optional)<input id="vacationNote" maxlength="500"></label>
+          <p id="vacationEstimate" class="wide muted"></p><button type="submit">Urlaub beantragen</button>
+        </form><h2>Urlaubsanträge</h2><div id="vacationList"></div>
+      </section>
+      <section id="page-sick" class="page"><h1>Krankmeldungen</h1><p class="muted">Bitte keine Diagnosen oder medizinischen Details eintragen.</p>
+        <form id="sickForm" class="panel form-grid"><label>Mitarbeiter<select id="sickEmployee" required></select></label><label>Von<input id="sickStart" type="date" required></label><label>Bis einschließlich<input id="sickEnd" type="date" required></label><button type="submit">Krankmeldung erfassen</button></form><div id="sickList"></div>
+      </section>
+      <section id="page-calendar" class="page"><h1>Abwesenheitskalender</h1><p class="muted">Grün: genehmigt · Gelb: beantragt · Rot: krank</p>
+        <div class="calendar-header"><button id="previousMonth" aria-label="Vorheriger Monat">←</button><h2 id="calendarMonth"></h2><button id="nextMonth" aria-label="Nächster Monat">→</button></div>
+        <label>Abteilung<select id="calendarDepartment"><option value="">Alle sichtbaren Abteilungen</option></select></label>
+        <div class="calendar-scroll"><div id="calendarGrid" class="calendar-grid"></div></div>
+      </section>
+      <section id="page-employees" class="page"><h1>Mitarbeiterverwaltung</h1><p class="muted">Jeder Mitarbeiter benötigt eine eigene erreichbare E-Mail-Adresse. Deaktivierte Mitarbeiter bleiben für die Historie erhalten.</p>
+        <form id="employeeForm" class="panel form-grid"><input id="employeeId" type="hidden">
+          <label>Vorname<input id="firstname" required maxlength="80"></label><label>Nachname<input id="lastname" required maxlength="80"></label>
+          <label>E-Mail<input id="employeeEmail" type="email" required></label><label>Abteilung<input id="employeeDepartment" list="departments" required maxlength="80"></label>
+          <datalist id="departments"><option>Verkauf</option><option>Werkstatt</option><option>Büro</option><option>Lager</option></datalist>
+          <label>Rolle<select id="employeeRole"><option value="mitarbeiter">Mitarbeiter</option><option value="teamleiter">Teamleiter</option><option value="admin">Admin</option></select></label>
+          <label>Status<select id="employeeActive"><option value="true">Aktiv</option><option value="false">Deaktiviert</option></select></label>
+          <fieldset class="wide"><legend>Regelmäßige Arbeitstage</legend><div id="workdays" class="checks"></div></fieldset>
+          <button type="submit" id="employeeSave">Mitarbeiter speichern</button><button type="button" id="employeeReset" class="secondary">Neuer Mitarbeiter</button>
+        </form><div id="employeeList"></div>
+      </section>
+      <section id="page-settings" class="page"><h1>Planungsgrundlagen</h1><p class="muted">Urlaubsanspruch und Feiertage werden pro Kalenderjahr hinterlegt. Ohne bestätigten Feiertagskalender werden keine neuen Urlaubsanträge angenommen.</p>
+        <h2>Urlaubsanspruch</h2><form id="allowanceForm" class="panel form-grid"><label>Mitarbeiter<select id="allowanceEmployee" required></select></label><label>Jahr<input id="allowanceYear" type="number" min="2020" max="2100" required></label><label>Anspruch in Tagen<input id="allowanceDays" type="number" min="0" max="366" step="1" required></label><label>Übertrag in Tagen<input id="carryDays" type="number" min="0" max="366" step="1" value="0" required></label><label>Übertrag gültig bis<input id="carryUntil" type="date" required></label><button type="submit">Anspruch speichern</button></form><div id="allowanceList"></div>
+        <h2>Feiertage &amp; arbeitsfreie Betriebstage</h2><form id="holidayForm" class="panel form-grid"><label>Datum<input id="holidayDate" type="date" required></label><label>Bezeichnung<input id="holidayName" required maxlength="120"></label><button type="submit">Tag hinterlegen</button></form><div id="holidayList"></div>
+        <form id="calendarConfirmForm" class="panel form-grid"><label>Kalenderjahr<input id="holidayYear" type="number" min="2020" max="2100" required></label><label>Kalenderbezeichnung<input id="holidayRegion" placeholder="z. B. Bayern, Standort …" required></label><button type="submit">Feiertage für dieses Jahr bestätigen</button></form><div id="confirmedYears"></div>
+      </section>
+    </main>
   </div>
-
-</div>
-
-<script src="script.js"></script>
-
-</body>
-</html>
+</body></html>
